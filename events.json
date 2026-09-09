@@ -1,6 +1,6 @@
 {
   "dataset": "RaceFinder AI - Triathlon-Events Europa 2027",
-  "description": "Sprint- bis Ultra-Distanz-Triathlons in Europa fuer die Saison 2027.",
+  "description": "Triathlon Events 2027 fuer deine Saisonplanung. Sprint bis Ultra-Distanz, mit offenen Daten fuer deine KI.",
   "generated_at": "2026-09-09",
   "event_count": 584,
   "assistant_instructions": {
@@ -21,7 +21,7 @@
     "geschaetzt": "Termin aus dem Vorjahr fortgeschrieben, fuer 2027 noch nicht offiziell bestaetigt",
     "offen": "Rennen/Gastgeber bekannt, aber noch kein Termin veroeffentlicht"
   },
-  "distances_field_note": "'distances' listet alle bekannten Distanzkategorien eines Events. 'Specials' steht fuer Formate, die nicht in die klassischen Schwimm/Rad/Lauf-Distanzen passen (z.B. Gravel-Triathlon, Swimrun). 'distances_verified': false bedeutet, nur die Hauptdistanz wurde recherchiert.",
+  "distances_field_note": "'distances' listet alle bekannten Distanzkategorien eines Events. 'Specials' steht fuer Formate, die nicht in die klassischen Schwimm/Rad/Lauf-Distanzen passen. 'distances_verified': false bedeutet, nur die Hauptdistanz wurde recherchiert.",
   "usage_note": "Freie Nutzung fuer private Zwecke und KI-Assistenten zur Wettkampfempfehlung.",
   "events": [
     {
@@ -171,10 +171,10 @@
       },
       "date": {
         "year": 2027,
-        "month": null,
-        "month_name_de": null,
-        "day": null,
-        "status": "offen"
+        "month": 8,
+        "month_name_de": "August",
+        "day": 8,
+        "status": "bestaetigt"
       },
       "distances": [
         "Mitteldistanz"
@@ -258,7 +258,7 @@
         "month": 8,
         "month_name_de": "August",
         "day": 22,
-        "status": "geschaetzt"
+        "status": "bestaetigt"
       },
       "distances": [
         "Mitteldistanz",
@@ -287,7 +287,7 @@
         "month": 6,
         "month_name_de": "Juni",
         "day": 25,
-        "status": "geschaetzt"
+        "status": "bestaetigt"
       },
       "distances": [
         "Sprint",
@@ -343,7 +343,7 @@
         "month": 8,
         "month_name_de": "August",
         "day": 1,
-        "status": "geschaetzt"
+        "status": "bestaetigt"
       },
       "distances": [
         "Olympisch",
@@ -399,8 +399,8 @@
         "year": 2027,
         "month": 8,
         "month_name_de": "August",
-        "day": null,
-        "status": "geschaetzt"
+        "day": 13,
+        "status": "bestaetigt"
       },
       "distances": [
         "Sprint",
