@@ -73,9 +73,13 @@
   .layout{
     display:grid;
     grid-template-columns:280px 1fr;
+    grid-template-rows:auto 1fr;
     gap:0;
     align-items:start;
   }
+  #map{grid-column:2; grid-row:1;}
+  #list-wrap{grid-column:2; grid-row:2;}
+  #filter-aside{grid-column:1; grid-row:1 / -1;}
 
   aside{
     padding:20px;
@@ -176,7 +180,7 @@
   }
   .row{
     display:grid;
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:160px 1fr auto;
     gap:16px;
     align-items:center;
     padding:14px 24px;
@@ -193,8 +197,8 @@
     flex-shrink:0;
   }
 
-  .cap-stack{ display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
-  .cap-small{ width:28px; height:28px; font-size:9px; }
+  .cap-stack{ display:flex; flex-direction:row; flex-wrap:nowrap; gap:3px; flex-shrink:0; width:160px; overflow:hidden; }
+  .cap-small{ width:24px; height:24px; font-size:8px; flex-shrink:0; }
   .row-main .name{font-weight:600; font-size:15px; margin:0;}
   .row-main .meta{margin:2px 0 0; font-size:13px; color:var(--ink-2);}
   .status-tag{
@@ -234,10 +238,39 @@
   .leaflet-popup-content a{color:var(--accent-ink);}
 
   @media (max-width: 820px){
-    .layout{grid-template-columns:1fr;}
-    aside{position:static; max-height:none; border-right:none; border-bottom:1px solid var(--border);}
-    .row{grid-template-columns:auto 1fr; }
+    .layout{grid-template-columns:1fr; grid-template-rows:none;}
+    #filter-aside{position:static; max-height:none; border-right:none; border-bottom:1px solid var(--border); grid-column:1; grid-row:auto;}
+    #map{grid-column:1; grid-row:auto;}
+    #list-wrap{grid-column:1; grid-row:auto;}
+    .row{grid-template-columns:160px 1fr; }
     .row-stats{grid-column:1 / -1; justify-content:flex-start; padding-left:50px; flex-wrap:wrap;}
+
+    #map{order:1;}
+    #filter-aside{order:2;}
+    #list-wrap{order:3;}
+    #more-filters{display:none;}
+    #more-filters.open{display:block;}
+  }
+  .mobile-filter-toggle{
+    display:none;
+    width:100%;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 20px;
+    background:var(--surface);
+    border:none;
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+    margin:0 -20px 16px;
+    width:calc(100% + 40px);
+  }
+  @media (max-width: 820px){
+    .mobile-filter-toggle{ display:flex; }
   }
 
   .info-icon{
@@ -488,12 +521,9 @@
   </div>
 </div>
 <div class="layout">
-  <aside>
-    <div class="filter-group">
-      <h3 id="fg-search">Suche</h3>
-      <input type="text" id="f-search" placeholder="Name oder Ort">
-    </div>
+  <div id="map"></div>
 
+  <aside id="filter-aside">
     <div class="filter-group">
       <h3 id="fg-distance">Distanz</h3>
       <label class="check-row"><input type="checkbox" class="f-distance" value="Super-Sprint" checked><span class="swim-dot" style="background:var(--supersprint)"></span><span id="dist-label-ssprint">Super-Sprint</span></label>
@@ -503,6 +533,18 @@
       <label class="check-row"><input type="checkbox" class="f-distance" value="Langdistanz" checked><span class="swim-dot" style="background:var(--full)"></span><span id="dist-label-full">Langdistanz</span></label>
       <label class="check-row"><input type="checkbox" class="f-distance" value="Ultra-Triathlon" checked><span class="swim-dot" style="background:var(--ultra)"></span><span id="dist-label-ultra">Ultra-Triathlon</span></label>
       <div class="legend-row"><span class="swim-dot" style="background:var(--multi)"></span><span id="dist-label-multi">Mehrere Distanzen (auf der Karte)</span></div>
+    </div>
+
+    <button class="mobile-filter-toggle" id="mobile-filter-toggle" onclick="toggleMobileFilters()">
+      <span id="mobile-filter-label">Weitere Filter anzeigen</span>
+      <span class="usage-chevron" id="mobile-filter-chevron">▾</span>
+    </button>
+
+    <div id="more-filters">
+
+    <div class="filter-group">
+      <h3 id="fg-search">Suche</h3>
+      <input type="text" id="f-search" placeholder="Name oder Ort">
     </div>
 
     <div class="filter-group">
@@ -573,13 +615,13 @@
       <label class="check-row"><input type="checkbox" class="f-fee" value="unbekannt" checked><span id="fee-label-5">noch unklar / fehlende Daten</span></label>
     </div>
 
+    </div>
   </aside>
 
-  <main>
-    <div id="map"></div>
+  <div id="list-wrap">
     <div id="list"></div>
     <div id="empty" style="display:none;"><span id="empty-text">Keine Events für diese Filterkombination.</span></div>
-  </main>
+  </div>
 </div>
 
 <footer id="site-footer">
@@ -882,6 +924,16 @@ function submitMissingDataForm(evt){
 function toggleUsageNote(){
   document.getElementById('usage-body').classList.toggle('collapsed');
   document.getElementById('usage-chevron').classList.toggle('collapsed');
+}
+function toggleMobileFilters(){
+  const wrap = document.getElementById('more-filters');
+  const chevron = document.getElementById('mobile-filter-chevron');
+  const label = document.getElementById('mobile-filter-label');
+  const isOpen = wrap.classList.toggle('open');
+  chevron.classList.toggle('collapsed', !isOpen);
+  label.textContent = isOpen
+    ? (currentLang === 'en' ? 'Hide more filters' : 'Weitere Filter ausblenden')
+    : (currentLang === 'en' ? 'Show more filters' : 'Weitere Filter anzeigen');
 }
 
 const FEEDBACK_ENDPOINT = "https://formspree.io/f/mkjnqgeg";
