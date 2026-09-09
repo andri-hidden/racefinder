@@ -791,6 +791,16 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom:12
 }).addTo(map);
 
+function buildPopupHtml(ev){
+  const popupDots = ev.distances.map(d => {
+    const dc = DISTANCE_COLOR[d];
+    return `<span class="popup-dist-dot" style="background:${dc.fill};" title="${distLabel(d)}"></span>`;
+  }).join('');
+  const popupDistances = ev.distances.map(distLabel).join(' / ');
+  const popupInfo = ev.info_url ? `<br><a class="popup-race-btn" href="${ev.info_url}" target="_blank" rel="noopener">${t('info-link')}</a>` : `<br><span style="color:#999;">${t('info-soon')}</span>`;
+  return `<b>${ev.name}</b><br>${cityLabel(ev.city)}, ${countryLabel(ev.country)}<br>${popupDots}${popupDistances} · ${dateText(ev)}${popupInfo}`;
+}
+
 const markers = {};
 EVENTS.forEach((ev, i) => {
   const c = ev.distances.length > 1 ? {fill:'var(--multi)', tint:'var(--multi-tint)', ink:'var(--multi-ink)', tag:'MULTI'} : DISTANCE_COLOR[ev.distances[0]];
@@ -802,15 +812,14 @@ EVENTS.forEach((ev, i) => {
     fillOpacity:0.85,
     weight:1.5
   }).addTo(map);
-  const popupDots = ev.distances.map(d => {
-    const dc = DISTANCE_COLOR[d];
-    return `<span class="popup-dist-dot" style="background:${dc.fill};" title="${distLabel(d)}"></span>`;
-  }).join('');
-  const popupDistances = ev.distances.map(distLabel).join(' / ');
-  const popupInfo = ev.info_url ? `<br><a class="popup-race-btn" href="${ev.info_url}" target="_blank" rel="noopener">${t('info-link')}</a>` : `<br><span style="color:#999;">${t('info-soon')}</span>`;
-  marker.bindPopup(`<b>${ev.name}</b><br>${cityLabel(ev.city)}, ${countryLabel(ev.country)}<br>${popupDots}${popupDistances} · ${dateText(ev)}${popupInfo}`);
+  marker.bindPopup(buildPopupHtml(ev));
   markers[i] = marker;
 });
+function refreshAllPopups(){
+  EVENTS.forEach((ev, i) => {
+    markers[i].setPopupContent(buildPopupHtml(ev));
+  });
+}
 
 const countryPanelEl = document.getElementById('country-panel');
 const ALL_COUNTRIES = [...new Set(EVENTS.map(e => e.country))].sort();
@@ -1019,6 +1028,7 @@ function setLanguage(lang){
 
   renderCountryPanel();
   updateCountryToggleLabel();
+  refreshAllPopups();
   applyFilters();
 }
 
